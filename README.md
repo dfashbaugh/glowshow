@@ -1,6 +1,4 @@
-<snippet>
-  <content><![CDATA[
-# ${1:GlowShow}
+#GlowShow
 
 DMX Wireless LEDs
 
@@ -8,7 +6,3 @@ DMX Wireless LEDs
 
 TODO: Write usage instructions
 
-
-]]></content>
-  <tabTrigger>readme</tabTrigger>
-</snippet>
