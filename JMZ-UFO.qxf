@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE FixtureDefinition>
+<FixtureDefinition xmlns="http://qlcplus.sourceforge.net/FixtureDefinition">
+ <Creator>
+  <Name>Q Light Controller Plus</Name>
+  <Version>4.8.4</Version>
+  <Author>James Devito</Author>
+ </Creator>
+ <Manufacturer>JMZ</Manufacturer>
+ <Model>UFO</Model>
+ <Type>Other</Type>
+ <Channel Name="ADDR">
+  <Group Byte="0">Maintenance</Group>
+  <Capability Min="0" Max="14">0=ALL,1=T,2=DNCRS</Capability>
+ </Channel>
+ <Channel Name="RATE">
+  <Group Byte="0">Speed</Group>
+  <Capability Min="0" Max="255">SPEED</Capability>
+ </Channel>
+ <Channel Name="PTTRN">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="62" Max="80"></Capability>
+ </Channel>
+ <Channel Name="R1">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="G1">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="B1">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="R2">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="G2">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="B2">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="BRGHT">
+  <Group Byte="0">Intensity</Group>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="MAP">
+  <Group Byte="0">Nothing</Group>
+  <Capability Min="128" Max="128"></Capability>
+ </Channel>
+ <Mode Name="MODE1">
+  <Physical>
+   <Bulb ColourTemperature="0" Type="" Lumens="0"/>
+   <Dimensions Width="0" Height="0" Depth="0" Weight="0"/>
+   <Lens DegreesMin="0" DegreesMax="0" Name="Other"/>
+   <Focus Type="Fixed" PanMax="0" TiltMax="0"/>
+   <Technical PowerConsumption="0" DmxConnector="5-pin"/>
+  </Physical>
+  <Channel Number="0">ADDR</Channel>
+  <Channel Number="1">RATE</Channel>
+  <Channel Number="2">PTTRN</Channel>
+  <Channel Number="3">R1</Channel>
+  <Channel Number="4">G1</Channel>
+  <Channel Number="5">B1</Channel>
+  <Channel Number="6">R2</Channel>
+  <Channel Number="7">G2</Channel>
+  <Channel Number="8">B2</Channel>
+  <Channel Number="9">BRGHT</Channel>
+  <Channel Number="10">MAP</Channel>
+ </Mode>
+</FixtureDefinition>
