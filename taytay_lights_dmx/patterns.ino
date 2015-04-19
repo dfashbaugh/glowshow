@@ -5,7 +5,7 @@ uint32_t solidColor(long f, int pixelIndex) {
 
 uint32_t colorWipe(long f, int pixelIndex) {
   if (f < 0) return -1;
-  if (pixelIndex < f % ledsPerStrip)
+  if (pixelIndex < f % totalLEDs)
     return color1;
   return color2;
 }
@@ -20,7 +20,7 @@ uint32_t rainbow(long f, int pixelIndex) {
 uint32_t rainbowCycle(long f, int pixelIndex) {
   if (f < 0) return -1;
   int j = f % 384 * 5;			
-  return Wheel((pixelIndex * 384 / ledsPerStrip + j));
+  return Wheel((pixelIndex * 384 / totalLEDs + j));
 }
 
 uint32_t colorAlternator(long f, int pixelIndex) {
@@ -50,7 +50,7 @@ uint32_t bounce(long f, int pixelIndex) {
 uint32_t colorChase(long f, int pixelIndex) {
   if (f < 0) return -1;
   int j = 9;
-  if (pixelIndex >= f%ledsPerStrip && pixelIndex <= f%ledsPerStrip+j)
+  if (pixelIndex >= f%totalLEDs && pixelIndex <= f%totalLEDs+j)
     return color1;
   return color2;
 }
@@ -87,7 +87,7 @@ uint32_t colorWipeMeter(long f, int pixelIndex) {
   if (f == -2) return -1;
     
   if (f == -1) {
-    params[0] = random(0,ledsPerStrip);
+    params[0] = random(0,totalLEDs);
     return -1;
   }
   
@@ -102,7 +102,7 @@ uint32_t colorWipeMeterGradient(long f, int pixelIndex) {
   if (f == -2) return -1;
   
   if (f == -1) {
-    params[0] = random(ledsPerStrip);
+    params[0] = random(totalLEDs);
     return -1;
   }
 
@@ -118,8 +118,8 @@ uint32_t flickerStrobeTwo(long f, int pixelIndex) {
   
   if (f == -1) {
     // Select two random pixels.
-    params[0] = random(ledsPerStrip);
-    params[1] = random(ledsPerStrip);
+    params[0] = random(totalLEDs);
+    params[1] = random(totalLEDs);
     return -1;
   }
   
@@ -139,10 +139,10 @@ uint32_t flickerStrobeFour(long f, int pixelIndex) {
   
   if (f == -1) {
     // Select four random pixels.
-    params[0] = random(ledsPerStrip);
-    params[1] = random(ledsPerStrip);
-    params[2] = random(ledsPerStrip);
-    params[3] = random(ledsPerStrip);
+    params[0] = random(totalLEDs);
+    params[1] = random(totalLEDs);
+    params[2] = random(totalLEDs);
+    params[3] = random(totalLEDs);
     return -1;
   }
   

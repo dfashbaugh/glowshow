@@ -1,19 +1,16 @@
-  // make an empty tab called ignore.h and this will run.
+#define USE_OCTOWS2811
 
-#include "OctoWS2811.h"
-// #include <Adafruit_NeoPixel.h>
-#define PIN 2
+#include<OctoWS2811.h>
+#include<FastLED.h>
 
-//108 or 116 pixels
-const int ledsPerStrip = 300;
+#define NUM_LEDS_PER_STRIP 300
+#define NUM_STRIPS 6
 
-DMAMEM int displayMemory[ledsPerStrip * 6];
-int drawingMemory[ledsPerStrip * 6];
+const int totalLEDs = NUM_LEDS_PER_STRIP * NUM_STRIPS;
 
-const int config = WS2811_GRB | WS2811_800kHz;
+CRGB leds[totalLEDs];
 
-OctoWS2811 strip(ledsPerStrip, displayMemory, drawingMemory, config);
-
+boolean useHeartbeat = true;
 
 boolean light = false;
 
@@ -83,10 +80,11 @@ void setup() {
   
   pinMode(13, OUTPUT); 
 
- Serial1.begin(9600); 
+  Serial1.begin(9600); 
   Serial.begin(9600);
   
-  strip.begin();
+  LEDS.addLeds<OCTOWS2811>(leds, NUM_LEDS_PER_STRIP).setCorrection( 0x9FFAF0 );;
+  LEDS.setBrightness(255);
   
   setColors();
 
@@ -342,7 +340,7 @@ void loop() {
 
   lastFrame = frame;
 
-  for (int i = 0; i < ledsPerStrip; i++) {
+  for (int i = 0; i < totalLEDs; i++) {
 
     int j = mapping(frame, i);
     uint32_t color = pattern(frame, j);
@@ -352,14 +350,15 @@ void loop() {
     uint8_t g = ((color & 0x00FF00) >> 8);
     uint8_t b = ((color & 0x0000FF));
     
-    if (brightness < 1) {
-      r = lerp(0, r, brightness);
-      g = lerp(0, g, brightness);
-      b = lerp(0, b, brightness);
-    }
+float whiteDimmer = 0.5;
 
+    if(r == g && g == b){
+      r *= whiteDimmer;
+      g *= whiteDimmer;
+      b *= whiteDimmer;
+    }
     
-strip.setPixel(i, r * 2, g * 2, b * 2);
+leds[i] = CRGB(r * 2, g * 2, b * 2);
 
 
     //      if (i == 0) {
@@ -402,13 +401,13 @@ strip.setPixel(i, r * 2, g * 2, b * 2);
 //The colours are a transition r - g -b - back to r
 
 void hideAll() {
-  for (int i = 0; i < ledsPerStrip; i++) {
-    strip.setPixel(i, 0); 
+  for (int i = 0; i < totalLEDs; i++) {
+    leds[i] = CRGB(0,0,0);
   }
 }
 
 void showAll(){
-  strip.show();    
+  LEDS.show();     
 }
 
 

@@ -3,17 +3,6 @@
 #include<OctoWS2811.h>
 #include<FastLED.h>
 
-
-// const int ledsPerStrip = 300;
-// const int totalLEDs = ledsPerStrip * 6;
-
-// DMAMEM int displayMemory[ledsPerStrip * 6];
-// int drawingMemory[ledsPerStrip * 6];
-
-// const int config = WS2811_GRB | WS2811_800kHz;
-
-// OctoWS2811 strip(ledsPerStrip, displayMemory, drawingMemory, config);
-
 #define NUM_LEDS_PER_STRIP 300
 #define NUM_STRIPS 6
 
@@ -21,23 +10,10 @@ const int totalLEDs = NUM_LEDS_PER_STRIP * NUM_STRIPS;
 
 CRGB leds[totalLEDs];
 
-
 boolean useHeartbeat = true;
 
-// #include "RTClib.h"
-//#include <SPI.h>
-//#include <Wire.h>
-
-// #define wireAddress 1 
 boolean light = false;
 
-// unsigned long currentTime = 0;
-// unsigned long loopTime = 0;
-
-//#ifndef _SERIAL
-//#define _SERIAL Uart
-//HardwareSerial1 Uart = HardwareSerial1();
-//#endif
 
 // Access to the pixel strip
 
@@ -47,9 +23,6 @@ boolean light = false;
 #define mySETADDRESS 2
 #define globalADDR 0
 
-//LPD8806 strip = LPD8806(64);
-
-// RTC_DS1307 RTC;
 
 #define NULL_PATTERN 0
 #define OFF_PATTERN 68
@@ -104,8 +77,6 @@ void setup() {
 
   Serial1.begin(9600); 
   Serial.begin(9600);
-  
-  // strip.begin();
 
   LEDS.addLeds<OCTOWS2811>(leds, NUM_LEDS_PER_STRIP).setCorrection( 0x9FFAF0 );;
   LEDS.setBrightness(255);
@@ -328,7 +299,7 @@ float whiteDimmer = 0.5;
       g *= whiteDimmer;
       b *= whiteDimmer;
     }
-// strip.setPixel(i, r * 2, g * 2, b * 2);
+    
 leds[i] = CRGB(r * 2, g * 2, b * 2);
     //      if (i == 0) {
     //        Serial1.println("color ");

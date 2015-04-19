@@ -28,29 +28,20 @@ uint32_t lerpColor(uint32_t a, uint32_t b, float t) {
   lerp(blue(a), blue(b), t));
 }
 
-uint32_t Wheel(uint16_t WheelPos) {
-
-  WheelPos %= 384;
-  byte r, g, b;
-  switch(WheelPos / 128) {
-  case 0:
-    r = 127 - WheelPos % 128;   //Red down
-    g = WheelPos % 128;      // Green up
-    b = 0;                  //blue off
-    break; 
-  case 1:
-    g = 127 - WheelPos % 128;  //green down
-    b = WheelPos % 128;      //blue up
-    r = 0;                  //red off
-    break; 
-  case 2:
-    b = 127 - WheelPos % 128;  //blue down 
-    r = WheelPos % 128;      //red up
-    g = 0;                  //green off
-    break; 
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  } else if(WheelPos < 170) {
+    WheelPos -= 85;
+   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  } else {
+   WheelPos -= 170;
+   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
   }
-  return myColor(r,g,b);
 }
+
+
 uint32_t myColor(uint8_t r , uint8_t g , uint8_t b){
   return ((uint32_t)(r) << 16) | ((uint32_t)(g ) <<  8) | (b );
 }
