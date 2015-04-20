@@ -31,7 +31,8 @@
 
 #include <DmxReceiver.h>
 
-#define MAX_DMX_CHANNEL 11
+#define MAX_DMX_CHANNEL 112
+#define PACKETSIZE 	 60
 
 DmxReceiver dmx;
 IntervalTimer dmxTimer;
@@ -50,7 +51,7 @@ void dmxTimerISR(void)
 void setup() {
         /* USB serial */
         Serial.begin(115200);
-        Serial2.begin(9600);
+        Serial2.begin(115200);
 
          
         /* DMX */
@@ -81,21 +82,20 @@ void loop()
         // }
 
         // /* Dump DMX data 30 times a second */
-        
-        // if (elapsed > 33) {
-        //         elapsed -= 33;
-
-                String dmxRecvString;
 
                 /* Display all nonzero DMX values */
                 for ( i = 1; i <= MAX_DMX_CHANNEL; i++) {
                         
                         v = dmx.getDimmer(i);
+
+                        if(v > 127 && v < 131)
+                        {
+                          v = 129;
+                        }
+
                         message[i-1] = v;
                         
                 }
-
-                Serial2.print(dmxRecvString);
 
 
                 // if(firstPass){
@@ -105,16 +105,18 @@ void loop()
 
 
                 // if(compareMessage() && !firstPass){ 
-
+				
+				delay(10);
+				
                     Serial2.write(130);
-                 for ( i = 0; i < MAX_DMX_CHANNEL; i++) {
+                 for ( i = 0; i < PACKETSIZE; i++) {
                     Serial2.write(message[i]);
                     // Serial.print(message[i],DEC);
                     // Serial.print(",");
                  }
 
                  //add heartbeat, 3 bytes
-                 writeHeartbeat();
+                 //writeHeartbeat();
 
                  Serial2.write(128); //end delim
 
