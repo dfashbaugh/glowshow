@@ -31,11 +31,11 @@
 
 #include <DmxReceiver.h>
 
-#define MAX_DMX_CHANNEL 107
+#define MAX_DMX_CHANNEL 131
 
 // Packet 1 is Start Delimeter, Packet ID, 3 Master infos, 49 individual infos, end delimeter - 55 Bytes
 // Packet 2 is Start Delimeter, Packet ID, 36 individual infos, end delimeter     --- 39 Bytes
-#define PACKETSIZE 	 52 // Not counting start/end delimters and packet ID
+#define PACKETSIZE 	 131 // Not counting start/end delimters and packet ID
 
 DmxReceiver dmx;
 IntervalTimer dmxTimer;
