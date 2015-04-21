@@ -28,8 +28,9 @@ byte mMapping    = 0;
 byte mRed2       = 0;
 byte mGreen2     = 0;
 byte mBlue2      = 0;
+int  mCurrentFrameCount = 0;
 
-
+#define NUM_STEPS_PER_FRAME 20
 #define NULL_PATTERN 0
 #define OFF_PATTERN 68
 #define PAUSE_PATTERN 67
@@ -397,7 +398,17 @@ void loop() {
   // unsigned long smoothedTime = currentTime + internalTimeSmoother;
   // unsigned long smoothedTime = (currentTime * timeDivider ) + internalTimeSmoother; 
 
-  frame = ( currentTime + internalTimeSmoother ) / rate; 
+  int usedRate = 128-rate;
+  mCurrentFrameCount += abs(usedRate);
+  
+  if(mCurrentFrameCount >= NUM_STEPS_PER_FRAME)
+  {
+    int framesToMove = mCurrentFrameCount/NUM_STEPS_PER_FRAME;
+    mCurrentFrameCount = mCurrentFrameCount - framesToMove*NUM_STEPS_PER_FRAME;
+    
+    frame += usedRate < 0 ? -1*framesToMove : framesToMove;  
+  }
+   //( currentTime + internalTimeSmoother ) / rate; 
 
   // Serial.print(internalTimeSmoother);
   // Serial.print(" ");
