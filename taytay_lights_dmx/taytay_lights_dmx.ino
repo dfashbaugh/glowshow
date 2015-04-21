@@ -14,14 +14,20 @@ boolean useHeartbeat = true;
 
 boolean light = false;
 
+#define DANCERNUMBER 1
+#define READBUFFERSIZE 133
 
-// Access to the pixel strip
-
-#define NUM_POLES 6
-
-#define myADDRESS 11
-#define mySETADDRESS 2
-#define globalADDR 0
+// Values applied to specific dancer
+float mIndBrightness = 1.0;
+byte mRed1       = 0;
+byte mGreen1     = 0;
+byte mBlue1      = 0;
+byte mPattern    = 0;
+byte mRate       = 0;
+byte mMapping    = 0;
+byte mRed2       = 0;
+byte mGreen2     = 0;
+byte mBlue2      = 0;
 
 
 #define NULL_PATTERN 0
@@ -34,25 +40,21 @@ boolean light = false;
 
 #define MAX_FRAME 100000
 
-#define PACKET_LENGTH 16 //includes start and end delimeter 
 
-unsigned int incomingBrightness=0;
-unsigned int incomingRate=0;
 unsigned int rate = 2;
 unsigned int patternByte = NULL_PATTERN;
-unsigned int mappingByte = 0; // forward
 
 // unix timestamp that the sketch starts at
 unsigned long startedAt = 0;
 unsigned long lastTime = -1;
 
-float brightness = 1.0;
 uint8_t r1 = 255, g1 = 0, b1 = 0, 
-r2 = 0, g2 = 255, b2 = 0, 
-r3 = 0, g3 = 0, b3 = 0;
+r2 = 0, g2 = 255, b2 = 0;
+
+uint8_t heartByte1 = 0, heartByte2 = 0, heartByte3 = 0;
 
 float params[20];
-uint32_t color1, color2, color3;
+uint32_t color1, color2, color3 = 0;
 
 boolean isOff = false;
 boolean advance = false;
@@ -71,7 +73,6 @@ unsigned long currentTime;
 unsigned long lastMillis;
 unsigned long internalTimeSmoother;
 
-//String inputString = "";
 boolean stringComplete = false;
 
 IntervalTimer myTimer;
@@ -80,8 +81,8 @@ void setup() {
   
   pinMode(13, OUTPUT); 
 
-  Serial1.begin(9600); 
-  Serial.begin(9600);
+  Serial1.begin(115200); 
+  Serial.begin(115200);
   
   LEDS.addLeds<OCTOWS2811>(leds, NUM_LEDS_PER_STRIP).setCorrection( 0x9FFAF0 );;
   LEDS.setBrightness(255);
@@ -111,11 +112,11 @@ void setup() {
   patterns[79] = &colorWipeMeterGradient;
   patterns[80] = &pulseOnce;
 
-//  pattern = &pulseOnce;
+ // pattern = &pulseOnce;
  pattern = &rainbow;
 
  rate = 10 ;
- brightness = 127;
+ mIndBrightness = 255;
 
   pattern(-2, 0);
 
@@ -127,7 +128,7 @@ int thiscounter = 0;
 char c;
 
 
-byte inputString [PACKET_LENGTH];
+  byte currentCommandBuf [READBUFFERSIZE];
 
 boolean fixInputString ()
 {
@@ -136,32 +137,32 @@ boolean fixInputString ()
   int beginIndex = 0;
   int endIndex   = 0;
 
-  for(int i = 0; i<PACKET_LENGTH; i++)
+  for(int i = 0; i<READBUFFERSIZE; i++)
   {
-    if(inputString[i] == 130)
+    if(currentCommandBuf[i] == 130)
     {
       beginFound = true;
       beginIndex = i;
     }
-    else if(inputString[i] == 128)
+    else if(currentCommandBuf[i] == 128)
     {
       endFound = true;
       endIndex = i;
     }
   }
 
-  if(endFound && beginFound && (beginIndex == 0) && (endIndex == PACKET_LENGTH))
+  if(endFound && beginFound && (beginIndex == 0) && (endIndex == READBUFFERSIZE))
   {
     return true;
   }
 
-  int difference = PACKET_LENGTH - endIndex;
-  byte tempString [PACKET_LENGTH];
-  memcpy(tempString, inputString, PACKET_LENGTH);
+  int difference = READBUFFERSIZE - endIndex;
+  byte tempString [READBUFFERSIZE];
+  memcpy(tempString, currentCommandBuf, READBUFFERSIZE);
 
-  for(int i = 0; i<PACKET_LENGTH; i++)
+  for(int i = 0; i<READBUFFERSIZE; i++)
   {
-      inputString[i] = tempString[ (beginIndex+i) %PACKET_LENGTH ];
+      currentCommandBuf[i] = tempString[ (beginIndex+i) %READBUFFERSIZE ];
   }
 
   return beginFound && endFound;
@@ -169,77 +170,98 @@ boolean fixInputString ()
 }
 
 void read() {
-  if (Serial1.available()>=PACKET_LENGTH) 
+
+
+  if (Serial1.available()>=READBUFFERSIZE) 
   { 
 
-        Serial1.readBytes(inputString, PACKET_LENGTH);
+        Serial1.readBytes(currentCommandBuf, READBUFFERSIZE);
 
         if(!fixInputString()) return;
 
-      //   for(int k = 0 ; k < PACKET_LENGTH; k++){
-      //   Serial.print(inputString[k]);
-      //   Serial.print(",");
-      // }
-      // Serial.println();
 
 
+      // Values applied to specific dancer
+      // float mIndBrightness = 0;
+      // byte mRed1       = 0;
+      // byte mGreen1     = 0;
+      // byte mBlue1      = 0;
+      // byte mPattern    = 0;
+      // byte mRate       = 0;
+      // byte mMapping    = 0;
+      // byte mRed2       = 0;
+      // byte mGreen2     = 0;
+      // byte mBlue2      = 0;
 
-        unsigned char addr = inputString[ 1 ];
+        mIndBrightness  = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 1 ] / 255.0;
+        mRed1           = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 2 ];
+        mGreen1         = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 3 ];
+        mBlue1          = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 4 ];
+        mPattern        = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 5 ];
+        mRate           = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 6 ];
+        mMapping        = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 7 ];
+        mRed2           = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 8 ]; 
+        mGreen2         = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 9 ];
+        mBlue2          = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 10 ]; 
 
-//         Serial.println("ADDR");
-//         Serial.println(addr);
 
+          r1 = mRed1;
+          g1 = mGreen1;
+          b1 = mBlue1;
 
-        // Pattern.
-        if (addr == myADDRESS || addr == mySETADDRESS || addr == globalADDR) {
-          
-          rate = inputString[ 2 ] + 1;
+          r2 = mRed2;
+          g2 = mGreen2;
+          b2 = mBlue2;
 
-          patternByte = inputString[ 3 ];
-          
-         // Serial.println("PTTRN");
-         // Serial.println(patternByte);
-          
-          r1 = inputString[ 4 ];
-          g1 = inputString[ 5 ];
-          b1 = inputString[ 6 ];
-          r2 = inputString[ 7 ];
-          g2 = inputString[ 8 ];
-          b2 = inputString[ 9 ];
-
-          brightness = inputString[ 10 ] / 127.0;
-          // Serial.println("BRIGHTNESS");
-          // Serial.println(brightness);
+          //singleColor has black second color
           setColors();
 
-          mappingByte = inputString[ 11 ];
+          rate = mRate + 1;
+          patternByte = mPattern_to_patternByte(mPattern);
 
-          // Serial.println(inputString[ 14 ]);
+          // Serial.print(     mIndBrightness     );
+          // Serial.print(",");
+          // Serial.print(     mRed1              );
+          // Serial.print(",");
+          // Serial.print(     mGreen1            );
+          // Serial.print(",");
+          // Serial.print(     mBlue1             );
+          // Serial.print(",");
+          // Serial.print(     patternByte        );
+          // Serial.print(",");
+          // Serial.print(     mRate              );
+          // Serial.print(",");
+          // Serial.print(     mMapping           );
+          // Serial.print(",");
+          // Serial.print(     mRed2              );
+          // Serial.print(",");
+          // Serial.print(     mGreen2            );
+          // Serial.print(",");
+          // Serial.println(     mBlue2             );
 
-          //TODO: DELETE COLOR3 --- turn into heartbeat???? use 24bit integer counting tens of milliseconds
-          r3 = inputString[ 12 ];
-          g3 = inputString[ 13 ];
-          b3 = inputString[ 14 ];
 
-          currentTime = myColor(r3,g3,b3) * 10;
+          // Serial.println(currentCommandBuf[ 14 ]);
 
-          // Serial.println(currentTime);
+          //TODO: find where heartBytes live in buffer
+          // heartByte1 = currentCommandBuf[ READBUFFERSIZE - 4 ];
+          // heartByte2 = currentCommandBuf[ READBUFFERSIZE - 3 ];
+          // heartByte3 = currentCommandBuf[ READBUFFERSIZE - 2 ];
 
-          //TODO: make mapping it's own byte
+          // currentTime = myColor(heartByte1,heartByte2,heartByte3) * 10;
 
-          if (mappingByte == 0 ) {
+          if (mMapping == 0 ) {
             mapping = &forward;
           } 
-          else if (mappingByte == 1 ) {
+          else if (mMapping == 1 ) {
             mapping = &backward;
           } 
-          else if (mappingByte == 2 ) {
+          else if (mMapping == 2 ) {
             mapping = &peak;
           } 
-          else if (mappingByte == 3 ) {
+          else if (mMapping == 3 ) {
             mapping = &valley;
           } 
-          else if (mappingByte == 4 ) {
+          else if (mMapping == 4 ) {
             mapping = &dither;
           } 
 
@@ -256,40 +278,89 @@ void read() {
           }
 
 
+          //   for(int k = 0 ; k < 11; k++){
+          //   Serial.print(currentCommandBuf[k]);
+          //   Serial.print(",");
+          // }
+          // Serial.println();
+
         }
 
-      // }
-
-      //inputString = "";
-
-    // }
-    
-// }
-// if(thiscounter > 0){
-// Serial.println(thiscounter);
-// }
-// thiscounter = 0;
-      // inputString = "";
-    
-}
   Serial1.flush();
 }
 
 
-void setColors() 
+
+unsigned int mPattern_to_patternByte(byte incomingByte)
 {
-  
-  color1 = myColor(r1, g1, b1);
-  color2 = myColor(r2, g2, b2);
-  color3 = myColor(r3, g3, b3);
-  
+switch (incomingByte) {
+    case 0:
+      return 68;
+      break;
+    case 1:
+      return 69;
+      break;
+    case 2:
+      return 70;
+      break;
+    case 3:
+      return 62;
+      break;
+    case 4:
+      return 63;
+      break;
+    case 5:
+      return 64;
+      break;
+    case 6:
+      return 65;
+      break;
+    case 7:
+      return 66;
+      break;
+    case 8:
+      return 71;
+      break;
+    case 9:
+      return 72;
+      break;
+    case 10:
+      return 73;
+      break;
+    case 11:
+      return 74;
+      break;
+    case 12:
+      return 75;
+      break;
+    case 13:
+      return 76;
+      break;
+    case 14:
+      return 77;
+      break;
+    case 15:
+      return 78;
+      break;
+    case 16:
+      return 79;
+      break;
+    case 17:
+      return 80;
+      break;
+    default:
+      return 0;
+      break;
+  }
+
+
 }
 
-void setBrightnRate() {
-
-  rate = incomingRate;
-  brightness = incomingBrightness;
-
+void setColors() 
+{   
+    color1 = myColor(r1, g1, b1);  
+    color2 = myColor(r2, g2, b2);
+  
 }
 
 unsigned long realTime;
@@ -349,6 +420,14 @@ void loop() {
    uint8_t r = ((color & 0xFF0000) >> 16);
     uint8_t g = ((color & 0x00FF00) >> 8);
     uint8_t b = ((color & 0x0000FF));
+
+
+    if (mIndBrightness < 1.0) {
+      r = lerp(0, r, mIndBrightness);
+      g = lerp(0, g, mIndBrightness);
+      b = lerp(0, b, mIndBrightness);
+    }
+
     
 float whiteDimmer = 0.5;
 
@@ -358,21 +437,10 @@ float whiteDimmer = 0.5;
       b *= whiteDimmer;
     }
     
-leds[i] = CRGB(r * 2, g * 2, b * 2);
+leds[i] = CRGB(r, g, b);
 
 
-    //      if (i == 0) {
-    //        Serial1.println("color ");
-    //        Serial1.println(r);
-    //        Serial1.println(g);
-    //        Serial1.println(b);
-    //        Serial1.println("frame ");
-    //        Serial1.println(frame);
-    //        
-    //        Serial1.println("===================== ");
-    //      }
-
-  }
+}
 
   showAll();  
 
@@ -380,7 +448,6 @@ leds[i] = CRGB(r * 2, g * 2, b * 2);
     frame = 0;
   } 
 
-  // }
 
 
   if (light)

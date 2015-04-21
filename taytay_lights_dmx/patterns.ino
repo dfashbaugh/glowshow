@@ -13,14 +13,14 @@ uint32_t colorWipe(long f, int pixelIndex) {
 uint32_t rainbow(long f, int pixelIndex) {
 
   if (f < 0) return -1;
-  return Wheel(f % 384);
+  return Wheel(f % 255);
 }
 
 // up/down variants to be replaced by mapping
 uint32_t rainbowCycle(long f, int pixelIndex) {
   if (f < 0) return -1;
-  int j = f % 384 * 5;			
-  return Wheel((pixelIndex * 384 / totalLEDs + j));
+  int j = f % 255 * 5;			
+  return Wheel((pixelIndex * 255 / totalLEDs + j));
 }
 
 uint32_t colorAlternator(long f, int pixelIndex) {

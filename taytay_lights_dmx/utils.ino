@@ -31,13 +31,13 @@ uint32_t lerpColor(uint32_t a, uint32_t b, float t) {
 uint32_t Wheel(byte WheelPos) {
   WheelPos = 255 - WheelPos;
   if(WheelPos < 85) {
-   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+   return myColor(255 - WheelPos * 3, 0, WheelPos * 3);
   } else if(WheelPos < 170) {
     WheelPos -= 85;
-   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+   return myColor(0, WheelPos * 3, 255 - WheelPos * 3);
   } else {
    WheelPos -= 170;
-   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+   return myColor(WheelPos * 3, 255 - WheelPos * 3, 0);
   }
 }
 
