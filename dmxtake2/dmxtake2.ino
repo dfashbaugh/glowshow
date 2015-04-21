@@ -31,7 +31,11 @@
 
 #include <DmxReceiver.h>
 
-#define MAX_DMX_CHANNEL 11
+#define MAX_DMX_CHANNEL 131
+
+// Packet 1 is Start Delimeter, Packet ID, 3 Master infos, 49 individual infos, end delimeter - 55 Bytes
+// Packet 2 is Start Delimeter, Packet ID, 36 individual infos, end delimeter     --- 39 Bytes
+#define PACKETSIZE 	 131 // Not counting start/end delimters and packet ID
 
 DmxReceiver dmx;
 IntervalTimer dmxTimer;
@@ -50,8 +54,9 @@ void dmxTimerISR(void)
 void setup() {
         /* USB serial */
         Serial.begin(115200);
-        Serial2.begin(9600);
-
+        Serial2.begin(115200);
+		delay(1000);
+		Serial.println("STARTUP");
          
         /* DMX */
         dmx.begin();
@@ -81,21 +86,20 @@ void loop()
         // }
 
         // /* Dump DMX data 30 times a second */
-        
-        // if (elapsed > 33) {
-        //         elapsed -= 33;
-
-                String dmxRecvString;
 
                 /* Display all nonzero DMX values */
                 for ( i = 1; i <= MAX_DMX_CHANNEL; i++) {
                         
                         v = dmx.getDimmer(i);
+
+                        if(v > 127 && v < 131)
+                        {
+                          v = 129;
+                        }
+
                         message[i-1] = v;
                         
                 }
-
-                Serial2.print(dmxRecvString);
 
 
                 // if(firstPass){
@@ -105,19 +109,40 @@ void loop()
 
 
                 // if(compareMessage() && !firstPass){ 
+				
+				delay(10);
+				
+                Serial2.write(130); // Start Delimeter
+				//Serial2.write(1); // Write packet number
+				
+                for ( i = 0; i < PACKETSIZE; i++) {
+                   Serial2.write(message[i]);
+                }
 
-                    Serial2.write(130);
-                 for ( i = 0; i < MAX_DMX_CHANNEL; i++) {
-                    Serial2.write(message[i]);
-                    // Serial.print(message[i],DEC);
-                    // Serial.print(",");
-                 }
-
-                 //add heartbeat, 3 bytes
-                 writeHeartbeat();
-
-                 Serial2.write(128); //end delim
-
+                //add heartbeat, 3 bytes
+                //writeHeartbeat();
+                Serial2.write(128); //end delim
+				
+				/*
+				// Send Packet 2
+				delay(10);
+				Serial2.write(130);
+				Serial2.write(2);
+				
+				for (i = 0; i < PACKETSIZE; i++)
+				{
+					if( (i + 53) > MAX_DMX_CHANNEL )
+					{
+						Serial2.write(0);
+					}
+					else
+					{
+						Serial2.write(message[i+53]);
+					}
+				}
+				
+				Serial2.write(130);
+				*/
                  // Serial.println();
                    // memcpy(lastMessage, message, MAX_DMX_CHANNEL);
                    // printDebug();
