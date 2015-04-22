@@ -28,8 +28,10 @@ byte mMapping    = 0;
 byte mRed2       = 0;
 byte mGreen2     = 0;
 byte mBlue2      = 0;
+int  mCurrentFrameCount = 0;
+byte lastPattern = 0;
 
-
+#define NUM_STEPS_PER_FRAME 20
 #define NULL_PATTERN 0
 #define OFF_PATTERN 68
 #define PAUSE_PATTERN 67
@@ -38,7 +40,7 @@ byte mBlue2      = 0;
 
 #define TIMING_ADDR 100
 
-#define MAX_FRAME 100000
+#define MAX_FRAME 2000000
 
 
 unsigned int rate = 2;
@@ -59,7 +61,7 @@ uint32_t color1, color2, color3 = 0;
 boolean isOff = false;
 boolean advance = false;
 
-long frame = 0;
+long frame = 1000000;
 long lastFrame = -1;
 
 typedef uint32_t (*Pattern)(long, int);
@@ -277,6 +279,12 @@ void read() {
             pattern(-2, 0); // On select initialization
           }
 
+          // Reset frame if pattern changes
+          if(patternByte != lastPattern)
+          {
+            lastPattern = patternByte;
+             frame = 1000000;
+          }
 
           //   for(int k = 0 ; k < 11; k++){
           //   Serial.print(currentCommandBuf[k]);
@@ -397,7 +405,17 @@ void loop() {
   // unsigned long smoothedTime = currentTime + internalTimeSmoother;
   // unsigned long smoothedTime = (currentTime * timeDivider ) + internalTimeSmoother; 
 
-  frame = ( currentTime + internalTimeSmoother ) / rate; 
+  int usedRate = 128-rate;
+  mCurrentFrameCount += abs(usedRate);
+  
+  if(mCurrentFrameCount >= NUM_STEPS_PER_FRAME)
+  {
+    int framesToMove = mCurrentFrameCount/NUM_STEPS_PER_FRAME;
+    mCurrentFrameCount = mCurrentFrameCount - framesToMove*NUM_STEPS_PER_FRAME;
+    
+    frame += usedRate < 0 ? -1*framesToMove : framesToMove;  
+  }
+   //( currentTime + internalTimeSmoother ) / rate; 
 
   // Serial.print(internalTimeSmoother);
   // Serial.print(" ");
