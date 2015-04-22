@@ -28,8 +28,10 @@ byte mMapping    = 0;
 byte mRed2       = 0;
 byte mGreen2     = 0;
 byte mBlue2      = 0;
+int  mCurrentFrameCount = 0;
+byte lastPattern = 0;
 
-
+#define NUM_STEPS_PER_FRAME 20
 #define NULL_PATTERN 0
 #define OFF_PATTERN 68
 #define PAUSE_PATTERN 67
@@ -38,7 +40,7 @@ byte mBlue2      = 0;
 
 #define TIMING_ADDR 100
 
-#define MAX_FRAME 100000
+#define MAX_FRAME 2000000
 
 
 unsigned int rate = 2;
@@ -59,7 +61,7 @@ uint32_t color1, color2, color3 = 0;
 boolean isOff = false;
 boolean advance = false;
 
-long frame = 0;
+long frame = 1000000;
 long lastFrame = -1;
 
 typedef uint32_t (*Pattern)(long, int);
@@ -172,6 +174,7 @@ boolean fixInputString ()
 void read() {
 
 
+<<<<<<< HEAD
   if (Serial1.available() >= READBUFFERSIZE)
   {
 
@@ -285,6 +288,127 @@ void read() {
     // Serial.println();
 
   }
+=======
+  if (Serial1.available()>=READBUFFERSIZE) 
+  { 
+
+        Serial1.readBytes(currentCommandBuf, READBUFFERSIZE);
+
+        if(!fixInputString()) return;
+
+
+
+      // Values applied to specific dancer
+      // float mIndBrightness = 0;
+      // byte mRed1       = 0;
+      // byte mGreen1     = 0;
+      // byte mBlue1      = 0;
+      // byte mPattern    = 0;
+      // byte mRate       = 0;
+      // byte mMapping    = 0;
+      // byte mRed2       = 0;
+      // byte mGreen2     = 0;
+      // byte mBlue2      = 0;
+
+        mIndBrightness  = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 1 ] / 255.0;
+        mRed1           = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 2 ];
+        mGreen1         = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 3 ];
+        mBlue1          = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 4 ];
+        mPattern        = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 5 ];
+        mRate           = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 6 ];
+        mMapping        = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 7 ];
+        mRed2           = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 8 ]; 
+        mGreen2         = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 9 ];
+        mBlue2          = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 10 ]; 
+
+
+          r1 = mRed1;
+          g1 = mGreen1;
+          b1 = mBlue1;
+
+          r2 = mRed2;
+          g2 = mGreen2;
+          b2 = mBlue2;
+
+          //singleColor has black second color
+          setColors();
+
+          rate = mRate + 1;
+          patternByte = mPattern_to_patternByte(mPattern);
+
+          // Serial.print(     mIndBrightness     );
+          // Serial.print(",");
+          // Serial.print(     mRed1              );
+          // Serial.print(",");
+          // Serial.print(     mGreen1            );
+          // Serial.print(",");
+          // Serial.print(     mBlue1             );
+          // Serial.print(",");
+          // Serial.print(     patternByte        );
+          // Serial.print(",");
+          // Serial.print(     mRate              );
+          // Serial.print(",");
+          // Serial.print(     mMapping           );
+          // Serial.print(",");
+          // Serial.print(     mRed2              );
+          // Serial.print(",");
+          // Serial.print(     mGreen2            );
+          // Serial.print(",");
+          // Serial.println(     mBlue2             );
+
+
+          // Serial.println(currentCommandBuf[ 14 ]);
+
+          //TODO: find where heartBytes live in buffer
+          // heartByte1 = currentCommandBuf[ READBUFFERSIZE - 4 ];
+          // heartByte2 = currentCommandBuf[ READBUFFERSIZE - 3 ];
+          // heartByte3 = currentCommandBuf[ READBUFFERSIZE - 2 ];
+
+          // currentTime = myColor(heartByte1,heartByte2,heartByte3) * 10;
+
+          if (mMapping == 0 ) {
+            mapping = &forward;
+          } 
+          else if (mMapping == 1 ) {
+            mapping = &backward;
+          } 
+          else if (mMapping == 2 ) {
+            mapping = &peak;
+          } 
+          else if (mMapping == 3 ) {
+            mapping = &valley;
+          } 
+          else if (mMapping == 4 ) {
+            mapping = &dither;
+          } 
+
+          if (patternByte == OFF_PATTERN) {
+            hideAll();
+            showAll(); 
+            isOff = true;
+          } 
+
+          else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
+            isOff = false;
+            pattern = patterns[patternByte];
+            pattern(-2, 0); // On select initialization
+          }
+
+          // Reset frame if pattern changes
+          if(patternByte != lastPattern)
+          {
+            lastPattern = patternByte;
+             frame = 1000000;
+          }
+
+          //   for(int k = 0 ; k < 11; k++){
+          //   Serial.print(currentCommandBuf[k]);
+          //   Serial.print(",");
+          // }
+          // Serial.println();
+
+        }
+>>>>>>> 481db7f5d5f19d3ff1f006d7f64a540f2c385b55
 
   Serial1.flush();
 }
@@ -397,7 +521,21 @@ void loop() {
   // unsigned long smoothedTime = currentTime + internalTimeSmoother;
   // unsigned long smoothedTime = (currentTime * timeDivider ) + internalTimeSmoother;
 
+<<<<<<< HEAD
   frame = ( currentTime + internalTimeSmoother ) / rate;
+=======
+  int usedRate = 128-rate;
+  mCurrentFrameCount += abs(usedRate);
+  
+  if(mCurrentFrameCount >= NUM_STEPS_PER_FRAME)
+  {
+    int framesToMove = mCurrentFrameCount/NUM_STEPS_PER_FRAME;
+    mCurrentFrameCount = mCurrentFrameCount - framesToMove*NUM_STEPS_PER_FRAME;
+    
+    frame += usedRate < 0 ? -1*framesToMove : framesToMove;  
+  }
+   //( currentTime + internalTimeSmoother ) / rate; 
+>>>>>>> 481db7f5d5f19d3ff1f006d7f64a540f2c385b55
 
   // Serial.print(internalTimeSmoother);
   // Serial.print(" ");
