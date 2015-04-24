@@ -1,4 +1,4 @@
-int stripLengthFront[24] = {3, 3, 7, 4, 8, 5, 10, 10, 10, 10, 8, 9, 8, 8, 9, 9, 10, 10, 7, 9, 6, 8, 3, 6};
+int stripLengthFront[24] = {3, 3, 7, 4, 8, 5, 10, 10, 10, 10, 8, 9, 8, 8, 9, 9, 10, 10, 7, 9, 6, 8, 3, 6};  //180 pixels
 int stripLengthBack1[10] = {4,7,10,10,11,10,10,10,10,10};       //92 pixels
 int stripLengthBack2[10] = {5,7,10,10,11,10,10,10,10,10};       //93 pixels
 
@@ -266,9 +266,56 @@ int taylorTopCropX [] = {
 };
 
 
-int taylorXsize = sizeof(taylorTopCropX)/sizeof(int);
+int taylorSkirtX[] = {
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14,
+  14
+  } ;
+int taylorSkirtY[] = { 
 
-int taylorYsize = 9;
+
+
+  } ;
+
+
+int taylorCropSizeX = sizeof(taylorTopCropX)/sizeof(int);
+
+int taylorCropSizeY = 9;
+
+
+int taylorSkirtSizeX = sizeof(taylorSkirtX)/sizeof(int);
+
+int taylorSkirtSizeY = 14;
 
 int forward(long frame, int i) {
   return i;
@@ -278,23 +325,25 @@ int backward(long frame, int i) {
   return totalLEDs - 1 - i;
 }
 
+
 int peak(long frame, int i) {
 
 if(taylorMapTop == &pixToTaylorTopX){
 
-  if (i < taylorXsize / 2) {
+  if (i < taylorCropSizeX / 2) {
     return i;
   } else { 
-    return taylorXsize - 1 - i;
+    return taylorCropSizeX - 1 - i;
   }
 }
 else if(taylorMapTop == &pixToTaylorTopY){
-  if (i < taylorYsize / 2) {
+  if (i < taylorCropSizeY / 2) {
     return i;
   } else { 
-    return taylorYsize - 1 - i;
+    return taylorCropSizeY - 1 - i;
   }
 }
+
 else{
 
   if (i < totalLEDs / 2) {
@@ -309,19 +358,20 @@ else{
 int valley(long frame, int i) {
  
 if(taylorMapTop == &pixToTaylorTopX){
-  if (i < taylorXsize / 2) {
-    return taylorXsize / 2 - i;
+  if (i < taylorCropSizeX / 2) {
+    // return taylorCropSizeX / 2 - i;
+    return taylorCropSizeX - i ;
   } else { 
-    return i + taylorXsize/2 + 4;
+    return i;
   }
 }
 
 
 else if(taylorMapTop == &pixToTaylorTopY){
-  if (i <= taylorYsize / 2 + 1 ) {
-    return taylorYsize / 2 - i ;
+  if (i <= taylorCropSizeY / 2 + 1 ) {
+    return taylorCropSizeY / 2 - i ;
   } else { 
-    return i-taylorYsize;
+    return i-taylorCropSizeY;
   }
 }
 
@@ -339,7 +389,7 @@ else if(taylorMapTop == &pixToTaylorTopY){
 int dither(long frame, int i) {
   if(taylorMapTop == &pixToTaylorTopX){
       if (i % 2 == 0) {
-        return taylorXsize - 1 - i;
+        return taylorCropSizeX - 1 - i;
       } else { 
         return i;
       }
@@ -347,7 +397,7 @@ int dither(long frame, int i) {
 
 else if(taylorMapTop == &pixToTaylorTopY){
  if (i % 2 == 0) {
-        return taylorYsize - 1 - i;
+        return taylorCropSizeY - 1 - i;
       } else { 
         return i;
       }
@@ -365,26 +415,127 @@ else if(taylorMapTop == &pixToTaylorTopY){
 
 
 
-int grid(long frame, int i) {
+int peak_bottom(long frame, int i) {
 
-  // Is this an odd column?
-  if (i % (NUM_ROWS*2) >= NUM_ROWS) {
+if(taylorMapBottom == &pixToTaylorBotX){
 
-    // // How many odd colums so far?
-    // int o = i / (NUM_ROWS*2);
-
-    // // Fake index and real index add up to this number
-    // int s = (NUM_ROWS*3-1) + o*(NUM_ROWS*4);
-
-    // return s - i;
-
-    return (NUM_ROWS*3-1) + (i / (NUM_ROWS*2))*(NUM_ROWS*4) - i;
-
+  if (i < taylorSkirtSizeX / 2) {
+    return i;
+  } else { 
+    return taylorSkirtSizeX - 1 - i;
   }
+}
+else if(taylorMapBottom == &pixToTaylorBotY){
+  if (i < taylorSkirtSizeY / 2) {
+    return i;
+  } else { 
+    return taylorSkirtSizeY - 1 - i;
+  }
+}
 
-  return i;
+else{
+
+  if (i < totalLEDs / 2) {
+    return i;
+  } else { 
+    return totalLEDs - 1 - i;
+  }
+}
 
 }
+
+int valley_bottom(long frame, int i) {
+ 
+if(taylorMapBottom == &pixToTaylorBotX){
+  if (i < taylorSkirtSizeX / 2) {
+    return taylorSkirtSizeX / 2 - i;
+  } else { 
+    return i + taylorSkirtSizeX/2 + 4;
+  }
+}
+
+else if(taylorMapBottom == &pixToTaylorBotY){
+
+  if (i < taylorSkirtSizeY / 2 ) {
+    return taylorSkirtSizeY - i;
+  } 
+  else { 
+    return i;
+  }
+
+}
+
+ else 
+{
+  if (i < totalLEDs / 2) {
+    return totalLEDs / 2 - 1 - i;
+  } else { 
+    return i;
+  }
+}
+
+}
+
+int dither_bottom(long frame, int i) {
+  if(taylorMapBottom == &pixToTaylorBotX){
+      if (i % 2 == 0) {
+        return taylorSkirtSizeX - 1 - i;
+      } else { 
+        return i;
+      }
+}
+
+else if(taylorMapBottom == &pixToTaylorBotY){
+ if (i % 2 == 0) {
+        return taylorSkirtSizeY - 1 - i;
+      } else { 
+        return i;
+      }
+}
+
+ else 
+{
+  if (i % 2 == 0) {
+    return totalLEDs - 1 - i;
+  } else { 
+    return i;
+  }
+}
+}
+
+
+//TODO maybe put this into an array to eliminate the need for a for loop
+int pixToTaylorBotY(long frame, int p){
+
+  int total = 0;
+    for (int c = 0; c < 33; c++){
+   total =  total + SKIRT_HEIGHT;
+   if (total > p){
+     if(c%2 == 0){
+     total = total - p - 1;
+     }
+     else{
+       total= SKIRT_HEIGHT - (total - p); 
+       
+     }
+      return total;
+   }
+  }
+
+}
+
+int pixToTaylorBotX(long frame, int p){
+  int index = 0;
+  for(int i = 0; i < sizeof(taylorSkirtX); i++){
+
+    if(p < index + taylorSkirtX[i]  && p > index - 1){
+      return i;
+    }
+    index+=taylorSkirtX[i];
+  }
+
+}
+
 
 int snake(long frame, int i) {
   return i; 
@@ -406,9 +557,6 @@ int pixToTaylorTopX(long frame, int p){
   }
 
 }
-
-
-
 
 
 

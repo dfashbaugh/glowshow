@@ -9,27 +9,39 @@ boolean useHeartbeat = true;
 
 boolean light = false;
 
+//use this for crop top:
+// int topData1 = 180;
 
-int taylorTopLength = 150;
+int topData1 = 91;
+int topData2 = 181;
+int topData3 = 93;
 
-int taylorBotLength = 150;
 
+int taylorTopLength = 180;
 
+int taylorBotLength = 168;
+
+#define SKIRT_HEIGHT 14
+
+int botData1 = SKIRT_HEIGHT*10;
+int botData2 = SKIRT_HEIGHT*12;
+int botData3 = SKIRT_HEIGHT*11;
 
 //IF YOU ARE TAYLOR SWIFT, UNCOMMENT THIS LINE:
-#define IS_TAYLOR 1
+
+// #define IS_TAYLOR 1
 
 #ifdef IS_TAYLOR
 
 #define DANCERNUMBER 13
 //set this to the longest strip output length
-#define NUM_LEDS_PER_STRIP 300
+#define NUM_LEDS_PER_STRIP 180 //max strip length
 
 #else
 
-#define DANCERNUMBER 10
+#define DANCERNUMBER 6
 //set this to the longest strip output length
-#define NUM_LEDS_PER_STRIP 300
+#define NUM_LEDS_PER_STRIP 250
 
 #endif
 
@@ -37,9 +49,8 @@ const int totalLEDs = NUM_LEDS_PER_STRIP * NUM_STRIPS;
 
 CRGB leds[totalLEDs];
 
-#define READBUFFERSIZE 133
+#define READBUFFERSIZE 144
 
-#define NUM_ROWS 36
 
 // Values applied to specific dancer
 float mIndBrightness = 1.0;
@@ -103,7 +114,7 @@ uint8_t r3 = 255, g3 = 0, b3 = 0,
 
 
 float params[20];
-uint32_t color1, color2, color3 = 0, color4, color5;
+uint32_t color1, color2, color3 = 0;
 
 boolean isOff = false;
 
@@ -122,12 +133,13 @@ Pattern pattern;
 Pattern pattern_Bottom;
 
 typedef int (*Mapping)(long, int);
+
 Mapping mapping = &forward;
 
-Mapping mapping_Bottom = &forward;
-
 Mapping taylorMapTop = &snake;
-Mapping taylorMapBottom = &snake;
+
+Mapping mapping_Bottom = &dither_bottom;
+Mapping taylorMapBottom = &pixToTaylorBotY;
 
 
 void setup() {
@@ -138,7 +150,7 @@ void setup() {
   Serial.begin(115200);
 
   LEDS.addLeds<OCTOWS2811>(leds, NUM_LEDS_PER_STRIP).setCorrection( 0x9FFAF0 );;
-  LEDS.setBrightness(32);
+  LEDS.setBrightness(255);
 
   setColors();
 
@@ -172,12 +184,14 @@ void setup() {
   mIndBrightness = 255;
 
   rate_Bottom = 126;
+
   // pattern = &pulseOnce;
-  pattern_Bottom = &stripe;
+  pattern_Bottom = &gradient;
 
   mIndBrightness_Bottom = 255;
 
   pattern(-2, 0);
+
   pattern_Bottom(-2, 0);
 
 
@@ -247,7 +261,7 @@ void read() {
             mBlue2          = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 10 ]; 
         }
 
-        if(DANCERNUMBER == 13){
+        else if(DANCERNUMBER == 13){
                       mIndBrightness    = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 1 ] / 255.0;
                       mRed1             = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 2 ];
                       mGreen1           = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 3 ];
@@ -272,6 +286,8 @@ void read() {
                       mBlue2_Bottom            = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 21 ]; 
                       mTaylorMappingBot        = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 22 ];
                       
+                      // Serial.println(mIndBrightness);
+
                       r3 = mRed1_Bottom;
                       g3 = mGreen1_Bottom;
                       b3 = mBlue1_Bottom;
@@ -293,17 +309,47 @@ void read() {
                         mapping_Bottom = &backward;
                       } 
                       else if (mMapping_Bottom == 2 ) {
-                        mapping_Bottom = &peak;
+                        mapping_Bottom = &peak_bottom;
                       } 
                       else if (mMapping_Bottom == 3 ) {
-                        mapping_Bottom = &valley;
+                        mapping_Bottom = &valley_bottom;
                       } 
                       else if (mMapping_Bottom == 4 ) {
-                        mapping_Bottom = &dither;
+                        mapping_Bottom = &dither_bottom;
+                      } 
+
+
+                      if (mTaylorMappingTop == 0 ) {
+                        taylorMapTop = &snake;
+                      } 
+                      else if (mTaylorMappingTop == 1 ) {
+                        taylorMapTop = &pixToTaylorTopX;
+                      } 
+                      else if (mTaylorMappingTop == 2 ) {
+                        taylorMapTop = &pixToTaylorTopY;
+                      } 
+
+                      if (mTaylorMappingBot == 0 ) {
+                        taylorMapBottom = &snake;
+                      } 
+                      else if (mTaylorMappingBot == 1 ) {
+                        taylorMapBottom = &pixToTaylorBotX;
+                      } 
+                      else if (mTaylorMappingBot == 2 ) {
+                        taylorMapBottom = &pixToTaylorBotY;
+                      } 
+
+
+
+
+                      if (patternByte == OFF_PATTERN) {
+                        hideAll_top();
+                        showAll(); 
+                        isOff_Bottom = true;
                       } 
 
                       if (patternByte_Bottom == OFF_PATTERN) {
-                        hideAll();
+                        hideAll_bot();
                         showAll(); 
                         isOff_Bottom = true;
                       } 
@@ -356,13 +402,23 @@ void read() {
             mapping = &dither;
           } 
 
+#ifndef IS_TAYLOR
           if (patternByte == OFF_PATTERN) {
             hideAll();
             showAll(); 
             isOff = true;
           } 
+#endif 
 
-          else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
+// #ifdef IS_TAYLOR
+//           if (patternByte == OFF_PATTERN) {
+//             hideAll_top();
+//             showAll(); 
+//             isOff = true;
+//           } 
+// #endif         
+
+        if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
             isOff = false;
             pattern = patterns[patternByte];
             pattern(-2, 0); // On select initialization
@@ -453,37 +509,20 @@ void setColors()
 {
   color1 = myColor(r1, g1, b1);
   color2 = myColor(r2, g2, b2);
-
-  color4 = myColor(r3, g3, b3);
-  color5 = myColor(r4, g4, b4);
 }
 
+
+
+
+void setColorsBottom()
+{
+  color1 = myColor(r3, g3, b3);
+  color2 = myColor(r4, g4, b4);
+}
 
 void loop() {
 
   read();
-
-#ifndef IS_TAYLOR
-  if (isOff) {
-    hideAll();
-    showAll();
-    return;
-  }
-#endif
-
-#ifdef IS_TAYLOR
-  if (isOff) {
-    hideAll_top();
-    showAll();
-    return;
-  }
-    if (isOff_Bottom) {
-    hideAll_bot();
-    showAll();
-    return;
-  }
-#endif
-
 
   int usedRate = 128-rate;
   mCurrentFrameCount += abs(usedRate);
@@ -501,9 +540,28 @@ void loop() {
 
   lastFrame = frame;
 
+
+                int usedRate_Bottom = 128 - rate_Bottom;
+                mCurrentFrameCount_Bottom += abs(usedRate_Bottom);
+                
+                if(mCurrentFrameCount_Bottom >= NUM_STEPS_PER_FRAME)
+                {
+                  int framesToMove_Bottom = mCurrentFrameCount_Bottom/NUM_STEPS_PER_FRAME;
+                  mCurrentFrameCount_Bottom = mCurrentFrameCount_Bottom - framesToMove_Bottom * NUM_STEPS_PER_FRAME;
+                  
+                  frame_Bottom += usedRate_Bottom < 0 ? -1 * framesToMove_Bottom : framesToMove_Bottom;  
+                }
+
+                if (frame_Bottom != lastFrame_Bottom)
+                  pattern_Bottom(-1, 0); // Per frame initialization
+
+                lastFrame_Bottom = frame_Bottom;
+
+
+#ifndef IS_TAYLOR
   for (int i = 0; i < totalLEDs; i++) {
 
-    int j = mapping(frame, taylorMapTop(frame,i));
+    int j = mapping(frame, i);
     uint32_t color = pattern(frame, j);
 
 
@@ -527,9 +585,120 @@ void loop() {
       b *= whiteDimmer;
     }
 
-    leds[i] = CRGB(r, g, b);
+    leds[i] = CRGB(r, g, b); 
 
   }
+
+  if (isOff) {
+    hideAll();
+  }
+#endif
+
+
+#ifdef IS_TAYLOR
+              
+              /************************************************************/
+              /***************************TOP******************************/
+              /************************************************************/
+
+              for (int i = 0; i < topData1 + topData2 + topData3; i++) {
+
+                int j = mapping(frame, taylorMapTop(frame,i));
+                setColors();
+                uint32_t color = pattern(frame, j);
+
+
+                uint8_t r = ((color & 0xFF0000) >> 16);
+                uint8_t g = ((color & 0x00FF00) >> 8);
+                uint8_t b = ((color & 0x0000FF));
+
+
+                if (mIndBrightness < 1.0) {
+                  r = lerp(0, r, mIndBrightness);
+                  g = lerp(0, g, mIndBrightness);
+                  b = lerp(0, b, mIndBrightness);
+                }
+
+
+                float whiteDimmer = 0.5;
+
+                if (r == g && g == b) {
+                  r *= whiteDimmer;
+                  g *= whiteDimmer;
+                  b *= whiteDimmer;
+                }
+
+                int pxOffset;
+
+                if(i < topData1){
+                    pxOffset = i;
+                }
+                else if (i < topData1 + topData2){
+                    pxOffset = NUM_LEDS_PER_STRIP + i - topData1;
+                }
+                else if(i < topData1 + topData2 + topData3){
+                    pxOffset = NUM_LEDS_PER_STRIP  * 2 + i - (topData1+topData2);
+                }
+
+                leds[pxOffset] = CRGB(r,g,b);
+
+              }
+
+              /************************************************************/
+              /***************************BOTTOM***************************/
+              /************************************************************/
+
+              for (int i = 0; i < botData1+botData2+botData3; i++) {
+
+                int j = mapping_Bottom(frame_Bottom, taylorMapBottom(frame_Bottom,i));
+                setColorsBottom();
+                uint32_t color = pattern_Bottom(frame_Bottom, j);
+
+
+                uint8_t r = ((color & 0xFF0000) >> 16);
+                uint8_t g = ((color & 0x00FF00) >> 8);
+                uint8_t b = ((color & 0x0000FF));
+
+
+                if (mIndBrightness_Bottom < 1.0) {
+                  r = lerp(0, r, mIndBrightness_Bottom);
+                  g = lerp(0, g, mIndBrightness_Bottom);
+                  b = lerp(0, b, mIndBrightness_Bottom);
+                }
+
+
+                float whiteDimmer = 0.5;
+
+                if (r == g && g == b) {
+                  r *= whiteDimmer;
+                  g *= whiteDimmer;
+                  b *= whiteDimmer;
+                }
+
+                int pxOffset;
+
+                if(i < botData1){
+                    pxOffset = NUM_LEDS_PER_STRIP * 3 + i;
+                }
+                else if (i < botData1 + botData2){
+                    pxOffset = NUM_LEDS_PER_STRIP * 4 + i - botData1;
+                }
+                else if(i < botData1 + botData2 + botData3){
+                    pxOffset = NUM_LEDS_PER_STRIP  * 5 + i - (botData1+botData2);
+                }
+
+                leds[pxOffset] = CRGB(r, g, b);
+
+              }
+
+  if (isOff) {
+    hideAll_top();
+  }
+    if (isOff_Bottom) {
+    hideAll_bot();
+  }
+#endif
+
 
 
   showAll();
@@ -538,6 +707,9 @@ void loop() {
     frame = 0;
   }
 
+  if (frame_Bottom >= MAX_FRAME) {
+    frame_Bottom = 0;
+  }
 
 
   if (light)
@@ -546,6 +718,7 @@ void loop() {
     digitalWrite(13, LOW);
 
   light = !light;
+
 
 }
 
@@ -561,13 +734,13 @@ void hideAll() {
 }
 
 void hideAll_top() {
-  for (int i = 0; i < taylorTopLength; i++) {
+  for (int i = 0; i < NUM_LEDS_PER_STRIP*3; i++) {
     leds[i] = CRGB(0, 0, 0);
   }
 }
 
 void hideAll_bot() {
-  for (int i = taylorTopLength; i < taylorTopLength + taylorBotLength; i++) {
+  for (int i = NUM_LEDS_PER_STRIP*3; i < NUM_LEDS_PER_STRIP*6; i++) {
     leds[i] = CRGB(0, 0, 0);
   }
 }

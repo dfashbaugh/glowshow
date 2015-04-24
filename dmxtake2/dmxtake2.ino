@@ -31,11 +31,13 @@
 
 #include <DmxReceiver.h>
 
-#define MAX_DMX_CHANNEL 131
+// #define MAX_DMX_CHANNEL 131
 
-// Packet 1 is Start Delimeter, Packet ID, 3 Master infos, 49 individual infos, end delimeter - 55 Bytes
-// Packet 2 is Start Delimeter, Packet ID, 36 individual infos, end delimeter     --- 39 Bytes
-#define PACKETSIZE 	 131 // Not counting start/end delimters and packet ID
+// #define PACKETSIZE   131 // Not counting start/end delimters and packet ID
+
+#define MAX_DMX_CHANNEL 142
+
+#define PACKETSIZE   142 // WITH TAYLORS two x 11 channels
 
 DmxReceiver dmx;
 IntervalTimer dmxTimer;
@@ -44,7 +46,7 @@ char message[MAX_DMX_CHANNEL] = "";
 
 char lastMessage[MAX_DMX_CHANNEL] = "";
 
-boolean firstPass = true;
+
 
 void dmxTimerISR(void)
 {
@@ -53,10 +55,10 @@ void dmxTimerISR(void)
 
 void setup() {
         /* USB serial */
-        Serial.begin(115200);
+        // Serial.begin(115200);
         Serial2.begin(115200);
-		delay(1000);
-		Serial.println("STARTUP");
+		// delay(1000);
+		// Serial.println("STARTUP");
          
         /* DMX */
         dmx.begin();
@@ -76,15 +78,17 @@ elapsedMillis elapsed;
 void loop()
 {
 
-
-
         /* Toggle LED on every new frame */
         if (dmx.newFrame())
         {
                 led = !led;
                 digitalWrite(LED_BUILTIN, led);
-        // }
+        }
 
+
+        /* Dump DMX data every second */
+        if (elapsed > 30) {
+                elapsed -= 30;
         // /* Dump DMX data 30 times a second */
 
                 /* Display all nonzero DMX values */
@@ -101,16 +105,8 @@ void loop()
                         
                 }
 
-
-                // if(firstPass){
-                //     // memcpy(lastMessage, message, MAX_DMX_CHANNEL);
-                //     firstPass = false;
-                // }
-
-
-                // if(compareMessage() && !firstPass){ 
 				
-				delay(10);
+				// delay(10);
 				
                 Serial2.write(130); // Start Delimeter
 				//Serial2.write(1); // Write packet number

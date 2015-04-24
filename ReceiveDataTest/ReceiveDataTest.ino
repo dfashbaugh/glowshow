@@ -4,7 +4,7 @@
  
   This example code is in the public domain.
  */
-  #define PACKETSIZE 133
+  #define PACKETSIZE 144
  
 // Pin 13 has an LED connected on most Arduino boards.
 // Pin 11 has the LED on Teensy 2.0
