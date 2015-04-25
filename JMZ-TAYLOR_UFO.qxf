@@ -7,11 +7,11 @@
   <Author>James Devito</Author>
  </Creator>
  <Manufacturer>JMZ</Manufacturer>
- <Model>UFO</Model>
- <Type>Other</Type>
- <Channel Name="ADDR">
+ <Model>TAYLO</Model>
+ <Type>Effect</Type>
+ <Channel Name="GRID">
   <Group Byte="0">Maintenance</Group>
-  <Capability Min="0" Max="14">0=ALL,1=T,2=DNCRS</Capability>
+  <Capability Min="0" Max="2"></Capability>
  </Channel>
  <Channel Name="RATE">
   <Group Byte="0">Speed</Group>
@@ -77,5 +77,6 @@
   <Channel Number="7">R2</Channel>
   <Channel Number="8">G2</Channel>
   <Channel Number="9">B2</Channel>
+  <Channel Number="10">GRID</Channel>
  </Mode>
 </FixtureDefinition>
