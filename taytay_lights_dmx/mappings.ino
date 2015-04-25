@@ -3,8 +3,576 @@ int stripLengthBack1[10] = {4,7,10,10,11,10,10,10,10,10};       //92 pixels
 int stripLengthBack2[10] = {5,7,10,10,11,10,10,10,10,10};       //93 pixels
 
 
-int taylorTopLongY[] = { } ;
-int taylorTopLongX[] = { } ;
+int taylorTopLongY[] = { 
+
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      19,
+
+      19,
+      17,
+      15,
+      13,
+      11,
+      9,
+      7,
+      5,
+      3,
+      1,
+
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+
+      19,
+      17,
+      15,
+      13,
+      11,
+      9,
+      7,
+      5,
+      3,
+      1,
+
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+
+      21,
+      19,
+      17,
+      15,
+      13,
+      11,
+      9,
+      7,
+      5,
+      3,
+      1,
+
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+
+      19,
+      17,
+      15,
+      13,
+      11,
+      9,
+      7,
+      5,
+      3,
+      1,
+
+      2,
+      4,
+      6,
+      8,
+      10,
+      16,
+      18,
+
+      17,
+      8,
+      6,
+      4,
+
+
+
+
+
+
+
+
+      2,
+      4,
+      6,
+      8,
+
+      7,
+      5,
+      3,
+
+      2,
+      4,
+      6,
+      8,
+      19,
+
+      20,
+      18,
+      8,
+      6,
+      4,
+      3,
+
+      4,
+      6,
+      8,
+      10,
+      12,
+      15,
+      17,
+      19,
+
+      18,
+      16,
+      14,
+      12,
+      10,
+      8,
+      6,
+
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      20,
+
+      21,
+      19,
+      17,
+      15,
+      13,
+      11,
+      9,
+      7,
+      5,
+      2,
+
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      19,
+
+      18,
+      16,
+      14,
+      12,
+      10,
+      8,
+      6,
+      4,
+      2,
+
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+
+      16,
+      14,
+      12,
+      10,
+      8,
+      6,
+      4,
+      2,
+
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+
+      17,
+      15,
+      13,
+      11,
+      9,
+      7,
+      5,
+      3,
+
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+
+      19,
+      17,
+      15,
+      13,
+      11,
+      9,
+      7,
+      5,
+      2,
+
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      19,
+
+      20,
+      18,
+      16,
+      14,
+      12,
+      10,
+      8,
+      6,
+      4,
+      2,
+
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      19,
+
+      20,
+      18,
+      16,
+      14,
+      12,
+      10,
+      8,
+      6,
+
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      19,
+
+      9,
+      7,
+      5,
+      3,
+
+      2,
+      4,
+      6,
+      8,
+      18,
+      20,
+
+      19,
+      8,
+      6,
+      4,
+
+      2,
+      4,
+      6,
+
+
+
+
+
+        3,
+        5,
+        7,
+        9,
+        18,
+        19,
+        17,
+        11,
+        9,
+        7,
+        5,
+        3,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        21,
+        19,
+        17,
+        15,
+        13,
+        11,
+        9,
+        7,
+        5,
+        3,
+        1,
+        3,
+        5,
+        7,
+        9,
+        11,
+        13,
+        15,
+        17,
+        19,
+        21,
+        20,
+        18,
+        16,
+        14,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        1,
+        3,
+        5,
+        7,
+        9,
+        11,
+        13,
+        15,
+        17,
+        19,
+        20,
+        18,
+        16,
+        14,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        20,
+        18,
+        16,
+        14,
+        12,
+        10,
+        8,
+        6,
+        4,
+        2 
+
+        // 2,
+        // 4,
+        // 6,
+        // 8,
+        // 10,
+        // 12,
+        // 14,
+        // 16,
+        // 18,
+        // 20,
+
+        // 20,
+        // 18,
+        // 16,
+        // 14,
+        // 12,
+        // 10,
+        // 8,
+        // 6,
+        // 4,
+        // 2,
+
+        // 2,
+        // 4,
+        // 6,
+        // 8,
+        // 10,
+        // 12,
+        // 14,
+        // 16,
+        // 18,
+        // 20,
+
+        // 19,
+        // 17,
+        // 15,
+        // 13,
+        // 11,
+        // 9,
+        // 7,
+        // 5,
+        // 3,
+        // 1,
+
+        // 2,
+        // 4,
+        // 6,
+        // 8,
+        // 10,
+        // 12,
+        // 14,
+        // 16,
+        // 18,
+        // 20,
+
+        // 21,
+        // 19,
+        // 17,
+        // 15,
+        // 13,
+        // 11,
+        // 9,
+        // 7,
+        // 5,
+        // 3,
+        // 1,
+
+        // 3,
+        // 5,
+        // 7,
+        // 9,
+        // 11,
+        // 13,
+        // 15,
+        // 17,
+        // 19,
+        // 21,
+
+        // 20,
+        // 18,
+        // 16,
+        // 14,
+        // 12,
+        // 10,
+        // 8,
+        // 6,
+        // 4,
+        // 2,
+
+        // 3,
+        // 5,
+        // 7,
+        // 9,
+        // 11,
+        // 17,
+        // 19,
+
+        // 18,
+        // 9,
+        // 7,
+        // 5,
+        // 3
+
+} ;
+int taylorTopLongX[] = { 
+    10,
+    10,
+    10,
+    10,
+    10,
+    11,
+    10,
+    10,
+    7,
+    4,
+
+
+    4,
+    3,
+    5,
+    6,
+    8,
+    7,
+    7,
+    10,
+    10,
+    9,
+    9,
+    8,
+    9,
+    8,
+    9,
+    9,
+    10,
+    10,
+    7,
+    8,
+    8,
+    4,
+    6,
+    4,
+    3,
+
+
+    5,
+    7,
+    10,
+    10,
+    11,
+    10,
+    10,
+    10,
+    10,
+    10
+} ;
 
 
 int taylorTopCropY[] = {
@@ -313,6 +881,13 @@ int taylorCropSizeX = sizeof(taylorTopCropX)/sizeof(int);
 int taylorCropSizeY = 9;
 
 
+int taylorLongSizeX = sizeof(taylorTopLongX)/sizeof(int);
+
+int taylorLongSizeY = 21;
+
+
+
+
 int taylorSkirtSizeX = sizeof(taylorSkirtX)/sizeof(int);
 
 int taylorSkirtSizeY = 14;
@@ -330,17 +905,17 @@ int peak(long frame, int i) {
 
 if(taylorMapTop == &pixToTaylorTopX){
 
-  if (i < taylorCropSizeX / 2) {
+  if (i < taylorLongSizeX / 2) {
     return i;
   } else { 
-    return taylorCropSizeX - 1 - i;
+    return taylorLongSizeX - 1 - i;
   }
 }
 else if(taylorMapTop == &pixToTaylorTopY){
-  if (i < taylorCropSizeY / 2) {
+  if (i < taylorLongSizeY / 2) {
     return i;
   } else { 
-    return taylorCropSizeY - 1 - i;
+    return taylorLongSizeY - 1 - i;
   }
 }
 
@@ -356,11 +931,11 @@ else{
 }
 
 int valley(long frame, int i) {
- 
+
 if(taylorMapTop == &pixToTaylorTopX){
-  if (i < taylorCropSizeX / 2) {
-    // return taylorCropSizeX / 2 - i;
-    return taylorCropSizeX - i ;
+  if (i < taylorLongSizeX / 2) {
+    // return taylorLongSizeX / 2 - i;
+    return taylorLongSizeX - i ;
   } else { 
     return i;
   }
@@ -368,10 +943,10 @@ if(taylorMapTop == &pixToTaylorTopX){
 
 
 else if(taylorMapTop == &pixToTaylorTopY){
-  if (i <= taylorCropSizeY / 2 + 1 ) {
-    return taylorCropSizeY / 2 - i ;
+  if (i <=  taylorLongSizeY / 2) {
+    return  taylorLongSizeY / 2 - 8 - i ;
   } else { 
-    return i-taylorCropSizeY;
+    return i- taylorLongSizeY;
   }
 }
 
@@ -543,20 +1118,40 @@ int snake(long frame, int i) {
 
 
 int pixToTaylorTopY(long frame, int p){
-  return taylorTopCropY[p];
+  // return taylorTopCropY[p];
+  return taylorTopLongY[p];
 }
 
 int pixToTaylorTopX(long frame, int p){
   int index = 0;
-  for(int i = 0; i < sizeof(taylorTopCropX); i++){
+  for(int i = 0; i < sizeof(taylorTopLongX); i++){
 
-    if(p < index + taylorTopCropX[i]  && p > index - 1){
+    if(p < index + taylorTopLongX[i]  && p > index - 1){
       return i;
     }
-    index+=taylorTopCropX[i];
+    index+=taylorTopLongX[i];
   }
 
 }
+
+
+
+
+// int pixToTaylorTopY(long frame, int p){
+//   return taylorTopCropY[p];
+// }
+
+// int pixToTaylorTopX(long frame, int p){
+//   int index = 0;
+//   for(int i = 0; i < sizeof(taylorTopCropX); i++){
+
+//     if(p < index + taylorTopCropX[i]  && p > index - 1){
+//       return i;
+//     }
+//     index+=taylorTopCropX[i];
+//   }
+
+// }
 
 
 

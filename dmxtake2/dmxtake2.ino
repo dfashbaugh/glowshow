@@ -85,11 +85,10 @@ void loop()
                 digitalWrite(LED_BUILTIN, led);
         }
 
-
         /* Dump DMX data every second */
-        if (elapsed > 30) {
-                elapsed -= 30;
-        // /* Dump DMX data 30 times a second */
+        if (elapsed > 50) {
+                elapsed -= 50;
+        /* Dump DMX data 30 times a second */
 
                 /* Display all nonzero DMX values */
                 for ( i = 1; i <= MAX_DMX_CHANNEL; i++) {
@@ -114,9 +113,8 @@ void loop()
                 for ( i = 0; i < PACKETSIZE; i++) {
                    Serial2.write(message[i]);
                 }
+                // delay((10);
 
-                //add heartbeat, 3 bytes
-                //writeHeartbeat();
                 Serial2.write(128); //end delim
 				
 				/*
@@ -146,22 +144,11 @@ void loop()
 
              
 
-                 printDebug();
+                 // printDebug();
                 
 
         }
 
-
-
-}
-
-void writeHeartbeat(){
-
-        unsigned long currentTime = millis()/10;
-        
-        Serial2.write(red(currentTime));
-        Serial2.write(green(currentTime));
-        Serial2.write(blue(currentTime));
 
 }
 

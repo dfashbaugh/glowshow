@@ -12,7 +12,7 @@
 // Pin 13 has the LED on Teensy 3.0
 // give it a name:
 int led = 13;
-char listing [112];
+char listing [144];
 
 
 char valuesLastOne [PACKETSIZE];

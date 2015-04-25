@@ -12,12 +12,12 @@ boolean light = false;
 //use this for crop top:
 // int topData1 = 180;
 
-int topData1 = 91;
-int topData2 = 181;
-int topData3 = 93;
+int topData1 = 92;
+int topData2 = 181; //checked
+int topData3 = 93; //checked right looking from back
 
 
-int taylorTopLength = 180;
+int taylorTopLength = 181;
 
 int taylorBotLength = 168;
 
@@ -35,11 +35,11 @@ int botData3 = SKIRT_HEIGHT*11;
 
 #define DANCERNUMBER 13
 //set this to the longest strip output length
-#define NUM_LEDS_PER_STRIP 180 //max strip length
+#define NUM_LEDS_PER_STRIP 181 //max strip length
 
 #else
 
-#define DANCERNUMBER 6
+#define DANCERNUMBER 3
 //set this to the longest strip output length
 #define NUM_LEDS_PER_STRIP 250
 
@@ -106,11 +106,11 @@ unsigned int patternByte_Bottom = NULL_PATTERN;
 
 
 
-uint8_t r1 = 255, g1 = 0, b1 = 0,
-        r2 = 0, g2 = 255, b2 = 0;
+uint8_t r1 = 255, g1 = 150, b1 = 150,
+        r2 = 0, g2 = 0, b2 = 0;
 
-uint8_t r3 = 255, g3 = 0, b3 = 0,
-        r4 = 0, g4 = 255, b4 = 0;
+uint8_t r3 = 255, g3 = 150, b3 = 150,
+        r4 = 0, g4 = 0, b4 = 0;
 
 
 float params[20];
@@ -134,9 +134,9 @@ Pattern pattern_Bottom;
 
 typedef int (*Mapping)(long, int);
 
-Mapping mapping = &forward;
+Mapping mapping = &valley;
 
-Mapping taylorMapTop = &snake;
+Mapping taylorMapTop = &pixToTaylorTopX;
 
 Mapping mapping_Bottom = &dither_bottom;
 Mapping taylorMapBottom = &pixToTaylorBotY;
@@ -177,9 +177,9 @@ void setup() {
   patterns[79] = &colorWipeMeterGradient;
   patterns[80] = &pulseOnce;
 
-  rate = 126;
+  rate = 122;
   // pattern = &pulseOnce;
-  pattern = &stripe;
+  pattern = &gradient;
 
   mIndBrightness = 255;
 
@@ -569,11 +569,11 @@ void loop() {
     uint8_t g = ((color & 0x00FF00) >> 8);
     uint8_t b = ((color & 0x0000FF));
 
-
+    //TODO change setbrightness only on change
     if (mIndBrightness < 1.0) {
-      r = lerp(0, r, mIndBrightness);
-      g = lerp(0, g, mIndBrightness);
-      b = lerp(0, b, mIndBrightness);
+      r *= mIndBrightness;
+      g *= mIndBrightness;
+      b *= mIndBrightness;
     }
 
 
@@ -603,6 +603,19 @@ void loop() {
 
               for (int i = 0; i < topData1 + topData2 + topData3; i++) {
 
+                int pxOffset;
+                //offset to account for abnormal dataIn placement
+                if(i < topData1){
+                    pxOffset = topData1 - 1 - i;
+                }
+                else if (i < topData1 + topData2){
+                    pxOffset = NUM_LEDS_PER_STRIP + topData2 - 1 - (i - topData1);
+                }
+                else if(i < topData1 + topData2 + topData3){
+                    pxOffset = NUM_LEDS_PER_STRIP  * 2 + (i - (topData1+topData2)) ;
+                }
+
+
                 int j = mapping(frame, taylorMapTop(frame,i));
                 setColors();
                 uint32_t color = pattern(frame, j);
@@ -612,11 +625,11 @@ void loop() {
                 uint8_t g = ((color & 0x00FF00) >> 8);
                 uint8_t b = ((color & 0x0000FF));
 
-
+                //TODO change setbrightness only on change
                 if (mIndBrightness < 1.0) {
-                  r = lerp(0, r, mIndBrightness);
-                  g = lerp(0, g, mIndBrightness);
-                  b = lerp(0, b, mIndBrightness);
+                  r *= mIndBrightness;
+                  g *= mIndBrightness;
+                  b *= mIndBrightness;
                 }
 
 
@@ -626,18 +639,6 @@ void loop() {
                   r *= whiteDimmer;
                   g *= whiteDimmer;
                   b *= whiteDimmer;
-                }
-
-                int pxOffset;
-
-                if(i < topData1){
-                    pxOffset = i;
-                }
-                else if (i < topData1 + topData2){
-                    pxOffset = NUM_LEDS_PER_STRIP + i - topData1;
-                }
-                else if(i < topData1 + topData2 + topData3){
-                    pxOffset = NUM_LEDS_PER_STRIP  * 2 + i - (topData1+topData2);
                 }
 
                 leds[pxOffset] = CRGB(r,g,b);
@@ -659,11 +660,11 @@ void loop() {
                 uint8_t g = ((color & 0x00FF00) >> 8);
                 uint8_t b = ((color & 0x0000FF));
 
-
+                //TODO change setbrightness only on change
                 if (mIndBrightness_Bottom < 1.0) {
-                  r = lerp(0, r, mIndBrightness_Bottom);
-                  g = lerp(0, g, mIndBrightness_Bottom);
-                  b = lerp(0, b, mIndBrightness_Bottom);
+                  r *= mIndBrightness_Bottom;
+                  g *= mIndBrightness_Bottom;
+                  b *= mIndBrightness_Bottom;
                 }
 
 
