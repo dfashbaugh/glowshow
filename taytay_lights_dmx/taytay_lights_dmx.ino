@@ -173,7 +173,7 @@ void setup() {
   Serial.begin(115200);
 
   LEDS.addLeds<OCTOWS2811>(leds, NUM_LEDS_PER_STRIP).setCorrection( 0x9FFAF0 );;
-  LEDS.setBrightness(32);
+  LEDS.setBrightness(255);
 
   ledCheck();
 
