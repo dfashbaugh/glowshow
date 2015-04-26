@@ -41,7 +41,7 @@ void loop() {
 	// Check string order
 	//if(checkStringOrder())
 	//{
-		for(int i = 0; i<PACKETSIZE; i++)
+		for(int i = 110; i<PACKETSIZE; i++)
 		{
 			Serial.print((int)listing[i]);
 			Serial.print(',');
@@ -80,11 +80,19 @@ boolean fixInputString ()
   {
     if(listing[i] == 130)
     {
+      if(beginFound)
+      {
+        return false;
+      }
       beginFound = true;
       beginIndex = i;
     }
     else if(listing[i] == 128)
     {
+      if(endFound)
+      {
+        return false;
+      }
       endFound = true;
       endIndex = i;
     }
