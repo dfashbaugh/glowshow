@@ -32,7 +32,7 @@ int botData3 = SKIRT_HEIGHT*11;
 unsigned long debugTimer = 0;
 
 //IF YOU ARE TAYLOR SWIFT, UNCOMMENT THIS LINE:
-//#define IS_TAYLOR 1
+#define IS_TAYLOR 1
 
 #ifdef IS_TAYLOR
 
@@ -129,10 +129,10 @@ unsigned int patternByte_Bottom = NULL_PATTERN;
 
 
 
-uint8_t r1 = 255, g1 = 150, b1 = 150,
+uint8_t r1 = 0, g1 = 0, b1 = 0,
         r2 = 0, g2 = 0, b2 = 0;
 
-uint8_t r3 = 255, g3 = 150, b3 = 150,
+uint8_t r3 = 0, g3 = 0, b3 = 0,
         r4 = 0, g4 = 0, b4 = 0;
 
 
@@ -173,7 +173,9 @@ void setup() {
   Serial.begin(115200);
 
   LEDS.addLeds<OCTOWS2811>(leds, NUM_LEDS_PER_STRIP).setCorrection( 0x9FFAF0 );;
-  LEDS.setBrightness(255);
+  LEDS.setBrightness(32);
+
+  ledCheck();
 
   setColors();
 
@@ -219,7 +221,28 @@ void setup() {
 
 
 
+
 }
+
+void ledCheck(){
+  int f = 0;
+  int s = 6;
+  while(f < 300){
+      for(int i = 0; i < totalLEDs; i++){
+        if ((i + f)/s % s < s/2){
+          leds[i] = CRGB(255,255,0);
+        }
+        else
+        leds[i] = CRGB(0,0,255);
+      }
+
+      LEDS.show();
+      f++;
+      delay(20);
+  }
+
+}
+
 
 byte currentCommandBuf [READBUFFERSIZE];
 
