@@ -42,6 +42,26 @@ unsigned long debugTimer = 0;
 
 #else
 
+/* 
+Dancer List:
+
+Aerial Pole Guys
+1 - Mark
+2 - Remi
+3 - Christian Henderson
+4 - Nolan
+5 - Toshi
+
+Floor Guys
+6 - Maho
+7 - Austin
+8 - Christian Owens
+9 - Jake
+10 - Mason
+11 - Robert
+12 - Guiseppe
+*/
+
 #define DANCERNUMBER 6
 //set this to the longest strip output length
 #define NUM_LEDS_PER_STRIP 250
