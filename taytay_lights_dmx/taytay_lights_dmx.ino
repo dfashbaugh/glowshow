@@ -27,9 +27,12 @@ int botData1 = SKIRT_HEIGHT*10;
 int botData2 = SKIRT_HEIGHT*12;
 int botData3 = SKIRT_HEIGHT*11;
 
-//IF YOU ARE TAYLOR SWIFT, UNCOMMENT THIS LINE:
+// Uncomment this line if you want to debug
+//#define RUN_DEBUG 1
+unsigned long debugTimer = 0;
 
-// #define IS_TAYLOR 1
+//IF YOU ARE TAYLOR SWIFT, UNCOMMENT THIS LINE:
+//#define IS_TAYLOR 1
 
 #ifdef IS_TAYLOR
 
@@ -39,7 +42,7 @@ int botData3 = SKIRT_HEIGHT*11;
 
 #else
 
-#define DANCERNUMBER 3
+#define DANCERNUMBER 6
 //set this to the longest strip output length
 #define NUM_LEDS_PER_STRIP 250
 
@@ -211,11 +214,19 @@ boolean fixInputString ()
   {
     if (currentCommandBuf[i] == 130)
     {
+      if(beginFound)
+      {
+        return false;
+      }
       beginFound = true;
       beginIndex = i;
     }
     else if (currentCommandBuf[i] == 128)
     {
+      if(endFound)
+      {
+        return false;
+      }
       endFound = true;
       endIndex = i;
     }
@@ -241,6 +252,7 @@ boolean fixInputString ()
 
 void read() {
 
+
   if (Serial1.available()>=READBUFFERSIZE) 
   { 
 
@@ -259,7 +271,33 @@ void read() {
             mRed2           = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 8 ]; 
             mGreen2         = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 9 ];
             mBlue2          = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 10 ]; 
+
+#ifdef RUN_DEBUG
+            Serial.print(mIndBrightness);
+            Serial.print(',');
+            Serial.print(mRed1);
+            Serial.print(',');
+            Serial.print(mGreen1);
+            Serial.print(',');
+            Serial.print(mBlue1);
+            Serial.print(',');
+            Serial.print(mPattern);
+            Serial.print(',');
+            Serial.print(mRate);
+            Serial.print(',');
+            Serial.print(mMapping);
+            Serial.print(',');
+            Serial.print(mRed2);
+            Serial.print(',');
+            Serial.print(mGreen2);
+            Serial.print(',');
+            Serial.print(mBlue2);
+            Serial.println();
+#endif
+
         }
+
+
 
         else if(DANCERNUMBER == 13){
                       mIndBrightness    = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 1 ] / 255.0;
@@ -287,6 +325,50 @@ void read() {
                       mTaylorMappingBot        = currentCommandBuf[ (DANCERNUMBER-1) * 10 + 22 ];
                       
                       // Serial.println(mIndBrightness);
+#ifdef RUN_DEBUG
+
+            Serial.print(mIndBrightness);
+            Serial.print(',');
+            Serial.print(mRed1);
+            Serial.print(',');
+            Serial.print(mGreen1);
+            Serial.print(',');
+            Serial.print(mBlue1);
+            Serial.print(',');
+            Serial.print(mPattern);
+            Serial.print(',');
+            Serial.print(mRate);
+            Serial.print(',');
+            Serial.print(mMapping);
+            Serial.print(',');
+            Serial.print(mRed2);
+            Serial.print(',');
+            Serial.print(mGreen2);
+            Serial.print(',');
+            Serial.print(mBlue2);
+            Serial.print(',');
+            Serial.print(mIndBrightness_Bottom);
+            Serial.print(',');
+            Serial.print(mRed1_Bottom);
+            Serial.print(',');
+            Serial.print(mGreen1_Bottom);
+            Serial.print(',');
+            Serial.print(mBlue1_Bottom);
+            Serial.print(',');
+            Serial.print(mPattern_Bottom);
+            Serial.print(',');
+            Serial.print(mRate_Bottom);
+            Serial.print(',');
+            Serial.print(mMapping_Bottom);
+            Serial.print(',');
+            Serial.print(mRed2_Bottom);
+            Serial.print(',');
+            Serial.print(mGreen2_Bottom);
+            Serial.print(',');
+            Serial.print(mBlue2_Bottom);
+            Serial.println();
+
+#endif
 
                       r3 = mRed1_Bottom;
                       g3 = mGreen1_Bottom;
@@ -370,6 +452,7 @@ void read() {
 
         }
 
+
           r1 = mRed1;
           g1 = mGreen1;
           b1 = mBlue1;
@@ -410,13 +493,13 @@ void read() {
           } 
 #endif 
 
-// #ifdef IS_TAYLOR
-//           if (patternByte == OFF_PATTERN) {
-//             hideAll_top();
-//             showAll(); 
-//             isOff = true;
-//           } 
-// #endif         
+#ifdef IS_TAYLOR
+          if (patternByte == OFF_PATTERN) {
+            hideAll_top();
+            showAll(); 
+            isOff = true;
+          } 
+#endif         
 
         if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
             isOff = false;
@@ -521,6 +604,16 @@ void setColorsBottom()
 }
 
 void loop() {
+
+/*
+#ifdef RUN_DEBUG
+  Serial.print("Loop time is: ");
+  Serial.print(millis() - debugTimer);
+  debugTimer = millis();
+  Serial.println(" ms");
+  //delay(24);
+#endif
+*/
 
   read();
 
