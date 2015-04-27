@@ -129,11 +129,11 @@ unsigned int patternByte_Bottom = NULL_PATTERN;
 
 
 
-uint8_t r1 = 255, g1 = 255, b1 = 0,
-        r2 = 0, g2 = 0, b2 = 255;
+uint8_t r1 = 0, g1 = 0, b1 = 0,
+        r2 = 0, g2 = 0, b2 = 0;
 
-uint8_t r3 = 255, g3 = 255, b3 = 255,
-        r4 = 255, g4 = 255, b4 = 255;
+uint8_t r3 = 0, g3 = 0, b3 = 0,
+        r4 = 0, g4 = 0, b4 = 0;
 
 
 float params[20];
