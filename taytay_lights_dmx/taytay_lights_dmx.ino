@@ -13,7 +13,7 @@ boolean light = false;
 // int topData1 = 180;
 
 int topData1 = 92;
-int topData2 = 181; //checked
+int topData2 = 171; //checked front
 int topData3 = 93; //checked right looking from back
 
 
@@ -129,11 +129,11 @@ unsigned int patternByte_Bottom = NULL_PATTERN;
 
 
 
-uint8_t r1 = 0, g1 = 0, b1 = 0,
-        r2 = 0, g2 = 0, b2 = 0;
+uint8_t r1 = 255, g1 = 255, b1 = 255,
+        r2 = 255, g2 = 255, b2 = 255;
 
-uint8_t r3 = 0, g3 = 0, b3 = 0,
-        r4 = 0, g4 = 0, b4 = 0;
+uint8_t r3 = 255, g3 = 255, b3 = 255,
+        r4 = 255, g4 = 255, b4 = 255;
 
 
 float params[20];
@@ -175,7 +175,7 @@ void setup() {
   LEDS.addLeds<OCTOWS2811>(leds, NUM_LEDS_PER_STRIP).setCorrection( 0x9FFAF0 );;
   LEDS.setBrightness(255);
 
-  ledCheck();
+  // ledCheck();
 
   setColors();
 
@@ -713,7 +713,7 @@ void loop() {
     }
 
 
-    float whiteDimmer = 0.5;
+    float whiteDimmer = 0.7;
 
     if (r == g && g == b) {
       r *= whiteDimmer;
@@ -777,7 +777,12 @@ void loop() {
                   b *= whiteDimmer;
                 }
 
+                if(!flatterTop(i)){
                 leds[pxOffset] = CRGB(r,g,b);
+              } 
+              else{
+                leds[pxOffset] = CRGB(0,0,0);
+              }
 
               }
 
