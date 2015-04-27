@@ -129,8 +129,8 @@ unsigned int patternByte_Bottom = NULL_PATTERN;
 
 
 
-uint8_t r1 = 255, g1 = 255, b1 = 255,
-        r2 = 255, g2 = 255, b2 = 255;
+uint8_t r1 = 255, g1 = 255, b1 = 0,
+        r2 = 0, g2 = 0, b2 = 255;
 
 uint8_t r3 = 255, g3 = 255, b3 = 255,
         r4 = 255, g4 = 255, b4 = 255;
@@ -175,7 +175,7 @@ void setup() {
   LEDS.addLeds<OCTOWS2811>(leds, NUM_LEDS_PER_STRIP).setCorrection( 0x9FFAF0 );;
   LEDS.setBrightness(255);
 
-  // ledCheck();
+  ledCheck();
 
   setColors();
 
